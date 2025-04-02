@@ -6,7 +6,7 @@ const rl = readline.createInterface({
 });
 
 function prompt(){
-
+      // Arrow function
       rl.question("$ ", (answer) => {
         if(answer.trim() === "exit"){
           console.log("Exiting shell...");
