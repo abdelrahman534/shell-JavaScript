@@ -1,4 +1,7 @@
 const readline = require("readline");
+const { spawnSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -7,19 +10,19 @@ const rl = readline.createInterface({
 
 const bulitinCommands = ["exit", "help", "echo", "clear", "pwd", "cd", "type"];
 
-function prompt(){
-      // Arrow function
-      rl.question("$ ", (input) => {
-        handleCommand(input.trim());
-        });
-} 
+function prompt() {
+  // Arrow function
+  rl.question("$ ", (input) => {
+    handleCommand(input.trim());
+  });
+}
 
 
 function handleCommand(input) {
   const [command, ...args] = input.split(" ");
 
-  const { spawnSync } = require("child_process");
-  
+
+
   switch (command) {
     case "exit":
       console.log("Exiting shell...");
@@ -30,7 +33,7 @@ function handleCommand(input) {
     case "help":
       args.join("me");
       for (let index = 0; index < bulitinCommands.length; index++) {
-        console.log(bulitinCommands[index]+"\t"); 
+        console.log(bulitinCommands[index] + "\t");
       }
       prompt();
       break;
@@ -41,15 +44,15 @@ function handleCommand(input) {
       break;
 
     case "clear":
-          console.clear();
-          prompt();
-          break;
+      console.clear();
+      prompt();
+      break;
 
     case "type":
-      if (args.length === 0){
+      if (args.length === 0) {
         console.log("type: missing argument");
         prompt();
-      }else{
+      } else {
         const cmd = args[0];
         if (bulitinCommands.includes(cmd)) {
           console.log(`${cmd} is a built-in command`);
@@ -58,14 +61,14 @@ function handleCommand(input) {
           if (which.status === 0) {
             const path = which.stdout.toString().trim();
             console.log(`${cmd} is ${path}`);
-          }else{
+          } else {
             console.log(`${cmd} is not a built-in command or executable`);
           }
+        }
       }
-    }
 
-    prompt();
-    break;
+      prompt();
+      break;
     case "pwd":
       console.log(process.cwd());
       prompt();
@@ -85,6 +88,20 @@ function handleCommand(input) {
       }
       prompt();
       break;
+
+    case "ls":
+      try {
+        const files = fs.readdirSync(process.cwd()); //current working directory
+        for (const file of files) {
+          process.stdout.write(file + " ");
+        }
+        console.log(); // New line
+      } catch (err) {
+        console.error(`ls: error reading directory`);
+      }
+      prompt();
+      break;
+
     default:
       console.log(`${command}: command not found\n`);
       prompt();
