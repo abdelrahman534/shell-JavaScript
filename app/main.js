@@ -70,6 +70,21 @@ function handleCommand(input) {
       console.log(process.cwd());
       prompt();
       break;
+
+
+    case "cd":
+      if (args.length === 0) {
+        console.log("cd: missing argument");
+      } else {
+        const dir = args[0];
+        try {
+          process.chdir(dir);
+        } catch (err) {
+          console.error(`cd: ${err.message}`);
+        }
+      }
+      prompt();
+      break;
     default:
       console.log(`${command}: command not found\n`);
       prompt();
