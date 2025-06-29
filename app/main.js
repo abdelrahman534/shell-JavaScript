@@ -8,7 +8,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-const bulitinCommands = ["exit", "help", "echo", "clear", "pwd", "cd", "type"];
+const builtinCommands = ["exit", "help", "echo", "clear", "pwd", "cd", "type"];
 
 function prompt() {
   // Arrow function
@@ -64,11 +64,11 @@ function handleCommand(input) {
       console.log("Exiting shell...");
       rl.close();
       process.exit(0);
-      return true;
+      return false;
       break;
     case "help":
       args.join("me");
-      for (let index = 0; index < bulitinCommands.length; index++) {
+      for (let index = 0; index < builtinCommands.length; index++) {
         console.log(bulitinCommands[index] + "\t");
       }
       return true;
@@ -77,17 +77,17 @@ function handleCommand(input) {
     case "echo":
       console.log(args.join(" "));
       return true;
-      break;
+
 
     case "clear":
       console.clear();
       return true;
-      break;
+
 
     case "type":
       if (args.length === 0) {
         console.log("type: missing argument");
-        return false;
+ 
       } else {
         const cmd = args[0];
         if (bulitinCommands.includes(cmd)) {
@@ -104,26 +104,28 @@ function handleCommand(input) {
       }
 
       return true;
-      break;
+      
     case "pwd":
       console.log(process.cwd());
       return true;
-      break;
+      
 
 
     case "cd":
       if (args.length === 0) {
         console.log("cd: missing argument");
+        return false;
       } else {
         const dir = args[0];
         try {
           process.chdir(dir);
         } catch (err) {
           console.error(`cd: ${err.message}`);
+          return false;
         }
       }
       return true;
-      break;
+      
 
     case "ls":
       try {
@@ -136,7 +138,7 @@ function handleCommand(input) {
         console.error(`ls: error reading directory`);
       }
       return true;
-      break;
+      
 
     default:
       console.log(`${command}: command not found\n`);
