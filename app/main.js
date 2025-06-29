@@ -13,8 +13,44 @@ const bulitinCommands = ["exit", "help", "echo", "clear", "pwd", "cd", "type"];
 function prompt() {
   // Arrow function
   rl.question("$ ", (input) => {
-    handleCommand(input.trim());
+    handleInput(input.trim());
   });
+}
+
+
+function handleInput(input){
+  
+  if(input.includes("&&")){
+    const commands = input.split("&&").map(cmd => cmd.trim());
+    
+    
+    for (const cmd of commands) {
+      const success = handleCommand(cmd);
+      if(!success){
+        prompt();
+        return;
+      }
+    }
+
+  prompt();
+  }
+
+  
+  else if(input.includes("||")){
+    const commands = input.split("||").map(cmd => cmd.trim());
+    
+    for(const cmd of commands){
+      const success = handleCommand(cmd);
+      if(success){
+        break; // Stop on first successful command
+      }
+    }
+    prompt();
+  }
+  else{
+    handleCommand(input);
+    prompt();
+  }
 }
 
 
@@ -28,30 +64,30 @@ function handleCommand(input) {
       console.log("Exiting shell...");
       rl.close();
       process.exit(0);
-      prompt();
+      return true;
       break;
     case "help":
       args.join("me");
       for (let index = 0; index < bulitinCommands.length; index++) {
         console.log(bulitinCommands[index] + "\t");
       }
-      prompt();
+      return true;
       break;
 
     case "echo":
       console.log(args.join(" "));
-      prompt();
+      return true;
       break;
 
     case "clear":
       console.clear();
-      prompt();
+      return true;
       break;
 
     case "type":
       if (args.length === 0) {
         console.log("type: missing argument");
-        prompt();
+        return false;
       } else {
         const cmd = args[0];
         if (bulitinCommands.includes(cmd)) {
@@ -67,11 +103,11 @@ function handleCommand(input) {
         }
       }
 
-      prompt();
+      return true;
       break;
     case "pwd":
       console.log(process.cwd());
-      prompt();
+      return true;
       break;
 
 
@@ -86,7 +122,7 @@ function handleCommand(input) {
           console.error(`cd: ${err.message}`);
         }
       }
-      prompt();
+      return true;
       break;
 
     case "ls":
@@ -99,12 +135,12 @@ function handleCommand(input) {
       } catch (err) {
         console.error(`ls: error reading directory`);
       }
-      prompt();
+      return true;
       break;
 
     default:
       console.log(`${command}: command not found\n`);
-      prompt();
+      return false;
   }
 }
 
